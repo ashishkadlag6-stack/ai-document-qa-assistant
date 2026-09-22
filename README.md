@@ -33,6 +33,17 @@ The system combines **PDF processing, semantic chunking, local embeddings, FAISS
 - 👀 Watchdog document monitoring
 - ☁️ Public frontend and backend deployment
 
+## 📸 Screenshots
+
+### Application Interface
+![AI Document Q&A Assistant - Application Interface](https://res.cloudinary.com/dtz0urit6/image/upload/q_auto:best,f_jpg/cloudinary-tools-uploads/hvu7hyrxodtmx5ngtwb0)
+
+### RAG Answer with Page-Level Source
+![RAG answer with page-level source citation](https://res.cloudinary.com/dtz0urit6/image/upload/q_auto:best,f_jpg/cloudinary-tools-uploads/wabqrfreusney1jtqn1f)
+
+### Grounding / Unknown-Question Test
+![Grounding test showing the assistant refusing unsupported document information](https://res.cloudinary.com/dtz0urit6/image/upload/q_auto:best,f_jpg/cloudinary-tools-uploads/d43b1kual0o1ndj2jyzz)
+
 ## 🏗️ Architecture
 
 ```text
