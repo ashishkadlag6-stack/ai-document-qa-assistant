@@ -35,7 +35,7 @@ The system combines **PDF processing, semantic chunking, local embeddings, FAISS
 
 ## 🏗️ Architecture
 
-`text
+```text
 PDF Upload
     │
     ▼
@@ -71,11 +71,11 @@ FAISS Vector Store
                    │
                    ▼
         Answer + Source Pages
-`
+```
 
 ### Hosted architecture
 
-`text
+```text
 Streamlit Community Cloud
             │
             │ HTTP
@@ -87,7 +87,7 @@ Streamlit Community Cloud
      ▼             ▼
  PDF/RAG       Groq LLM
  Processing    Generation
-`
+```
 
 ## 🧠 RAG Pipeline
 
@@ -133,7 +133,7 @@ The embedding model is **lazy-loaded** so the FastAPI process does not load the 
 
 ## 📁 Project Structure
 
-`text
+```text
 a i-document-qa-assistant/
 │
 ├── backend/
@@ -159,48 +159,48 @@ a i-document-qa-assistant/
 ├── .dockerignore
 ├── .gitignore
 └── README.md
-`
+```
 
 ## 🔌 REST API
 
 ### Health Check
 
-`http
+```http
 GET /health
-`
+```
 
 ### Upload PDF
 
-`http
+```http
 POST /upload
-`
+```
 
 Multipart field: `file=<your_pdf>`
 
 ### Ask a Question
 
-`http
+```http
 POST /ask
-`
+```
 
 Request:
 
-`json
+```json
 {
   "question": "What is Retrieval-Augmented Generation?"
 }
-`
+```
 
 Example response:
 
-`json
+```json
 {
   "answer": "Retrieval-Augmented Generation (RAG) ...",
   "sources": [
     "sample_ai_document.pdf — Page 1"
   ]
 }
-`
+```
 
 Interactive Swagger documentation is available locally at `http://127.0.0.1:8000/docs`.
 
@@ -208,30 +208,30 @@ Interactive Swagger documentation is available locally at `http://127.0.0.1:8000
 
 Retrieved source metadata is returned with page numbers:
 
-`text
+```text
 📚 Sources
 
 • sample_ai_document.pdf — Page 1
-`
+```
 
 This makes retrieved evidence easier to inspect and demonstrates page-aware RAG retrieval.
 
 ## 🧪 Example Queries
 
-`text
+```text
 What is Retrieval-Augmented Generation?
 How does a RAG system work?
 What are the benefits of using RAG?
 What information does this document contain?
-`
+```
 
 ### Grounding test
 
 Ask for information that is not present in the document:
 
-`text
+```text
 What is the population of India according to this document?
-`
+```
 
 For the sample document, the application returns a response indicating that the requested information is unavailable instead of fabricating a document-based answer.
 
@@ -239,62 +239,62 @@ For the sample document, the application returns a response indicating that the 
 
 ### Clone
 
-`bash
+```bash
 git clone https://github.com/ashishkadlag6-stack/ai-document-qa-assistant.git
 cd ai-document-qa-assistant
-`
+```
 
 ### Create a virtual environment
 
 macOS / Linux:
 
-`bash
+```bash
 python -m venv .venv
 source .venv/bin/activate
-`
+```
 
 Windows:
 
-`bash
+```bash
 python -m venv .venv
 .venv\\Scripts\\activate
-`
+```
 
 ### Install dependencies
 
-`bash
+```bash
 pip install -r requirements.txt
-`
+```
 
 ### Configure environment variables
 
-`bash
+```bash
 cp .env.example .env
-`
+```
 
 Add:
 
-`env
+```env
 GROQ_API_KEY=your_api_key_here
-`
+```
 
 Never commit `.env` or real API keys.
 
 ### Start FastAPI
 
-`bash
+```bash
 uvicorn main:app --reload
-`
+```
 
 ### Start Streamlit
 
 Open a second terminal:
 
-`bash
+```bash
 cd frontend
 pip install -r requirements.txt
 streamlit run app.py
-`
+```
 
 Local URLs:
 
@@ -306,27 +306,27 @@ Local URLs:
 
 Build:
 
-`bash
+```bash
 docker compose build
-`
+```
 
 Start:
 
-`bash
+```bash
 docker compose up -d
-`
+```
 
 Check:
 
-`bash
+```bash
 docker compose ps
-`
+```
 
 Stop:
 
-`bash
+```bash
 docker compose down
-`
+```
 
 Local services:
 
@@ -338,16 +338,16 @@ Local services:
 
 Local backend:
 
-`env
+```env
 GROQ_API_KEY=your_api_key_here
-`
+```
 
 Hosted Streamlit frontend:
 
-`text
+```text
 API_BASE_URL=https://ashish-ai-document-qa-api.onrender.com
 GROQ_API_KEY=your_api_key_here
-`
+```
 
 Store production credentials in deployment secrets and keep them out of source control.
 
