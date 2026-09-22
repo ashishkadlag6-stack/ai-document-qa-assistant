@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  syntax-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile Python source files
+        run: |
+          python -m compileall -q             main.py             document_processor.py             rag_pipeline.py             watcher.py             frontend
+
+      - name: Verify project files
+        run: |
+          test -f backend/Dockerfile
+          test -f frontend/Dockerfile
+          test -f docker-compose.yml
+          test -f requirements.txt
+          test -f frontend/requirements.txt
