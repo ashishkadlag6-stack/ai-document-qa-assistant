@@ -145,7 +145,18 @@ def answer_question(question: str, top_k: int = 3):
 
     for doc in result["source_documents"]:
         source_file = doc.metadata.get("source_file", "unknown")
+
+        # Prefer our custom page_number metadata.
         page_number = doc.metadata.get("page_number")
+
+        # Fallback to PyPDFLoader's original zero-based "page" metadata.
+        if page_number is None:
+            page = doc.metadata.get("page")
+            if page is not None:
+                try:
+                    page_number = int(page) + 1
+                except (TypeError, ValueError):
+                    page_number = None
 
         if page_number is not None:
             source = f"{source_file} — Page {page_number}"
