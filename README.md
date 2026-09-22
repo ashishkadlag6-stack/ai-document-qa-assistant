@@ -1,128 +1,143 @@
 # 🤖 AI Document Q&A Assistant
 
-An AI-powered **Retrieval-Augmented Generation (RAG)** application that allows users to upload PDF documents and ask natural-language questions based on their content.
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://ashish-ai-document-55.streamlit.app) [![Backend](https://img.shields.io/badge/API-Render-46E3B7?logo=render&logoColor=white)](https://ashish-ai-document-qa-api.onrender.com) [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/) [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
-The system combines **document processing, semantic search, vector embeddings, FAISS, Groq LLMs, FastAPI, Streamlit, and Docker** to provide grounded answers from uploaded documents.
+An end-to-end **Retrieval-Augmented Generation (RAG)** application for asking natural-language questions over uploaded PDF documents.
 
----
+The system combines **PDF processing, semantic chunking, local embeddings, FAISS vector search, Groq LLM inference, FastAPI, Streamlit, and Docker** into a practical AI engineering workflow.
 
-## 🚀 Features
+## 🚀 Live Demo
 
-* 📄 Upload and process PDF documents
-* ✂️ Intelligent document chunking
-* 🧠 Local sentence-transformer embeddings
-* 🔎 Semantic similarity search using FAISS
-* 🤖 Groq LLM-powered answer generation
-* 📚 Source-aware responses
-* 🛡️ Reduces hallucination by answering from retrieved document context
-* ⚡ FastAPI REST API
-* 💬 Streamlit chat interface
-* 👀 Automatic document processing with folder monitoring
-* 🐳 Docker and Docker Compose support
-* 🔐 Environment-based API key configuration
+| Component | URL |
+|---|---|
+| Streamlit Frontend | https://ashish-ai-document-55.streamlit.app |
+| FastAPI Backend | https://ashish-ai-document-qa-api.onrender.com |
+| Health Check | https://ashish-ai-document-qa-api.onrender.com/health |
+| GitHub | https://github.com/ashishkadlag6-stack/ai-document-qa-assistant |
 
----
+> The hosted application uses Streamlit for the interface and FastAPI for document processing and RAG inference.
+
+## ✨ Key Features
+
+- 📄 PDF upload and processing
+- ✂️ Recursive chunking with overlap
+- 🧠 Local Sentence Transformers embeddings
+- 🔎 FAISS semantic similarity retrieval
+- 🤖 Groq LLM answer generation
+- 📚 **Page-level source citations**
+- 🛡️ Context-grounded responses
+- ⚡ FastAPI REST API
+- 💬 Streamlit research interface
+- 🐳 Docker and Docker Compose support
+- 🔐 Environment-based secret management
+- 👀 Watchdog document monitoring
+- ☁️ Public frontend and backend deployment
 
 ## 🏗️ Architecture
 
-```text
-                  ┌─────────────────────┐
-                  │     PDF Document    │
-                  └──────────┬──────────┘
-                             │
-                             ▼
-                  ┌─────────────────────┐
-                  │   PDF Text Extract  │
-                  │       (PyPDF)       │
-                  └──────────┬──────────┘
-                             │
-                             ▼
-                  ┌─────────────────────┐
-                  │   Text Chunking     │
-                  │ Recursive Splitter  │
-                  └──────────┬──────────┘
-                             │
-                             ▼
-                  ┌─────────────────────┐
-                  │    Embeddings       │
-                  │ SentenceTransformers│
-                  └──────────┬──────────┘
-                             │
-                             ▼
-                  ┌─────────────────────┐
-                  │   FAISS Vector DB   │
-                  └──────────┬──────────┘
-                             │
-                  User Question
-                             │
-                             ▼
-                  ┌─────────────────────┐
-                  │ Semantic Retrieval  │
-                  │    Top-K Chunks     │
-                  └──────────┬──────────┘
-                             │
-                             ▼
-                  ┌─────────────────────┐
-                  │     Groq LLM        │
-                  │ Context + Question  │
-                  └──────────┬──────────┘
-                             │
-                             ▼
-                  ┌─────────────────────┐
-                  │  Grounded Answer    │
-                  │   + Source Info     │
-                  └─────────────────────┘
-```
+`text
+PDF Upload
+    │
+    ▼
+PyPDFLoader
+    │
+    ▼
+Text Chunking
+    │
+    ▼
+Sentence Transformer Embeddings
+    │
+    ▼
+FAISS Vector Store
+    │
+    │        User Question
+    │              │
+    │              ▼
+    │        Query Embedding
+    │              │
+    └──────► Similarity Search
+                   │
+                   ▼
+             Top-K Retrieval
+                   │
+                   ▼
+           Retrieved Context
+                   │
+                   ▼
+                Groq LLM
+                   │
+                   ▼
+           Grounded Answer
+                   │
+                   ▼
+        Answer + Source Pages
+`
 
----
+### Hosted architecture
 
-## 🧠 How RAG Works
+`text
+Streamlit Community Cloud
+            │
+            │ HTTP
+            ▼
+         Render
+     FastAPI Backend
+            │
+     ┌──────┴──────┐
+     ▼             ▼
+ PDF/RAG       Groq LLM
+ Processing    Generation
+`
 
-The application follows a Retrieval-Augmented Generation pipeline:
+## 🧠 RAG Pipeline
 
-1. User uploads a PDF.
-2. Text is extracted from the document.
-3. Large text is divided into smaller chunks.
-4. Each chunk is converted into a vector embedding.
-5. Embeddings are stored in a FAISS vector index.
-6. User submits a question.
-7. The system converts the question into an embedding.
-8. FAISS retrieves the most relevant document chunks.
-9. Retrieved context is passed to the Groq LLM.
-10. The LLM generates an answer based on the retrieved context.
-11. Relevant source information is returned with the answer.
+### Document ingestion
 
-This approach helps the application answer questions using the uploaded document rather than relying only on the LLM's general knowledge.
+1. Upload a PDF through the Streamlit UI.
+2. Extract text and page metadata with `PyPDFLoader`.
+3. Split content with `RecursiveCharacterTextSplitter`.
+4. Generate local embeddings with `sentence-transformers/all-MiniLM-L6-v2`.
+5. Store embeddings and metadata in FAISS.
 
----
+### Question answering
+
+1. Accept a natural-language question.
+2. Embed the query with the same embedding model.
+3. Retrieve the most relevant chunks from FAISS.
+4. Pass retrieved context to the Groq LLM.
+5. Generate an answer grounded in the retrieved context.
+6. Return source filename and page information.
+
+The embedding model is **lazy-loaded** so the FastAPI process does not load the model during application startup.
 
 ## 🛠️ Tech Stack
 
-| Category             | Technology                     |
-| -------------------- | ------------------------------ |
-| Programming Language | Python                         |
-| LLM                  | Groq                           |
-| RAG                  | Retrieval-Augmented Generation |
-| Embeddings           | Sentence Transformers          |
-| Vector Database      | FAISS                          |
-| PDF Processing       | PyPDF                          |
-| Backend API          | FastAPI                        |
-| Frontend             | Streamlit                      |
-| Containerization     | Docker                         |
-| Orchestration        | Docker Compose                 |
-| Automation           | Watchdog                       |
-| Version Control      | Git & GitHub                   |
-
----
+| Layer | Technology |
+|---|---|
+| Language | Python |
+| RAG | LangChain |
+| LLM | Groq |
+| Embeddings | Hugging Face Sentence Transformers |
+| Embedding Model | `sentence-transformers/all-MiniLM-L6-v2` |
+| Vector Store | FAISS |
+| PDF Processing | PyPDF |
+| Backend | FastAPI |
+| Frontend | Streamlit |
+| HTTP Client | Requests |
+| Containerization | Docker |
+| Orchestration | Docker Compose |
+| Monitoring | Watchdog |
+| Version Control | Git / GitHub |
+| Frontend Hosting | Streamlit Community Cloud |
+| Backend Hosting | Render |
 
 ## 📁 Project Structure
 
-```text
-ai-document-qa-assistant/
+`text
+a i-document-qa-assistant/
 │
 ├── backend/
 │   └── Dockerfile
-│
 ├── frontend/
 │   ├── app.py
 │   ├── api_client.py
@@ -130,277 +145,276 @@ ai-document-qa-assistant/
 │   ├── ui_components.py
 │   ├── requirements.txt
 │   └── Dockerfile
-│
 ├── documents/
 │   └── .gitkeep
-│
 ├── vectorstore/
 │   └── .gitkeep
-│
+├── main.py
 ├── document_processor.py
 ├── rag_pipeline.py
 ├── watcher.py
-├── main.py
-│
 ├── docker-compose.yml
 ├── requirements.txt
 ├── .env.example
 ├── .dockerignore
 ├── .gitignore
 └── README.md
-```
+`
 
----
-
-## ⚙️ API Endpoints
+## 🔌 REST API
 
 ### Health Check
 
-```http
+`http
 GET /health
-```
+`
 
-### Upload Document
+### Upload PDF
 
-```http
+`http
 POST /upload
-```
+`
 
-Multipart form field:
+Multipart field: `file=<your_pdf>`
 
-```text
-file=<your_pdf>
-```
+### Ask a Question
 
-### Ask Question
-
-```http
+`http
 POST /ask
-```
+`
 
 Request:
 
-```json
+`json
 {
-  "question": "What is this document about?"
+  "question": "What is Retrieval-Augmented Generation?"
 }
-```
+`
 
 Example response:
 
-```json
+`json
 {
-  "answer": "This document discusses...",
+  "answer": "Retrieval-Augmented Generation (RAG) ...",
   "sources": [
-    "sample.pdf"
+    "sample_ai_document.pdf — Page 1"
   ]
 }
-```
+`
 
----
+Interactive Swagger documentation is available locally at `http://127.0.0.1:8000/docs`.
+
+## 📚 Source Citations
+
+Retrieved source metadata is returned with page numbers:
+
+`text
+📚 Sources
+
+• sample_ai_document.pdf — Page 1
+`
+
+This makes retrieved evidence easier to inspect and demonstrates page-aware RAG retrieval.
+
+## 🧪 Example Queries
+
+`text
+What is Retrieval-Augmented Generation?
+How does a RAG system work?
+What are the benefits of using RAG?
+What information does this document contain?
+`
+
+### Grounding test
+
+Ask for information that is not present in the document:
+
+`text
+What is the population of India according to this document?
+`
+
+For the sample document, the application returns a response indicating that the requested information is unavailable instead of fabricating a document-based answer.
 
 ## 💻 Run Locally
 
-### 1. Clone the repository
+### Clone
 
-```bash
+`bash
 git clone https://github.com/ashishkadlag6-stack/ai-document-qa-assistant.git
 cd ai-document-qa-assistant
-```
+`
 
-### 2. Create virtual environment
+### Create a virtual environment
 
-```bash
+macOS / Linux:
+
+`bash
 python -m venv .venv
 source .venv/bin/activate
-```
+`
 
-For Windows:
+Windows:
 
-```bash
-.venv\Scripts\activate
-```
+`bash
+python -m venv .venv
+.venv\\Scripts\\activate
+`
 
-### 3. Install dependencies
+### Install dependencies
 
-```bash
+`bash
 pip install -r requirements.txt
-```
+`
 
-### 4. Configure environment variables
+### Configure environment variables
 
-Copy the example environment file:
-
-```bash
+`bash
 cp .env.example .env
-```
+`
 
-Add your Groq API key to `.env`:
+Add:
 
-```text
+`env
 GROQ_API_KEY=your_api_key_here
-```
+`
 
-Never commit the `.env` file to GitHub.
+Never commit `.env` or real API keys.
 
-### 5. Start the FastAPI backend
+### Start FastAPI
 
-```bash
+`bash
 uvicorn main:app --reload
-```
+`
 
-API:
+### Start Streamlit
 
-```text
-http://127.0.0.1:8000
-```
+Open a second terminal:
 
-Swagger documentation:
+`bash
+cd frontend
+pip install -r requirements.txt
+streamlit run app.py
+`
 
-```text
-http://127.0.0.1:8000/docs
-```
+Local URLs:
 
----
+- Streamlit: http://localhost:8501
+- FastAPI: http://127.0.0.1:8000
+- Swagger: http://127.0.0.1:8000/docs
 
-## 🐳 Run with Docker
+## 🐳 Docker Compose
 
-Make sure Docker Desktop is running.
+Build:
 
-### Build containers
-
-```bash
+`bash
 docker compose build
-```
+`
 
-### Start application
+Start:
 
-```bash
+`bash
 docker compose up -d
-```
+`
 
-### Check containers
+Check:
 
-```bash
+`bash
 docker compose ps
-```
+`
 
-### Application URLs
+Stop:
 
-Frontend:
-
-```text
-http://localhost:8501
-```
-
-FastAPI:
-
-```text
-http://localhost:8000
-```
-
-Swagger:
-
-```text
-http://localhost:8000/docs
-```
-
-### Stop application
-
-```bash
+`bash
 docker compose down
-```
+`
 
----
+Local services:
+
+- Streamlit: http://localhost:8501
+- FastAPI: http://localhost:8000
+- Swagger: http://localhost:8000/docs
 
 ## 🔐 Environment Variables
 
-Create `.env` from `.env.example`.
+Local backend:
 
-```text
+`env
 GROQ_API_KEY=your_api_key_here
-```
+`
 
-The actual `.env` file is intentionally excluded from Git using `.gitignore`.
+Hosted Streamlit frontend:
 
----
+`text
+API_BASE_URL=https://ashish-ai-document-qa-api.onrender.com
+GROQ_API_KEY=your_api_key_here
+`
 
-## 🧪 Example Workflow
-
-```text
-Upload PDF
-    ↓
-Document Processing
-    ↓
-Text Chunking
-    ↓
-Generate Embeddings
-    ↓
-Store in FAISS
-    ↓
-Ask Question
-    ↓
-Retrieve Relevant Chunks
-    ↓
-Send Context to Groq LLM
-    ↓
-Generate Grounded Answer
-    ↓
-Display Answer + Sources
-```
-
----
+Store production credentials in deployment secrets and keep them out of source control.
 
 ## 🎯 AI Engineering Concepts Demonstrated
 
-This project demonstrates practical AI Engineering concepts including:
+- Retrieval-Augmented Generation (RAG)
+- LLM application development
+- Semantic search
+- Text chunking and preprocessing
+- Vector embeddings
+- FAISS similarity search
+- Context grounding
+- Source attribution and page citations
+- REST API development
+- Frontend/backend integration
+- Docker containerization
+- Secret management
+- Cloud deployment
+- CPU-based model serving
 
-* Retrieval-Augmented Generation (RAG)
-* Large Language Model integration
-* Prompt-based context grounding
-* Semantic search
-* Vector embeddings
-* Vector similarity search
-* Document ingestion pipelines
-* REST API development
-* AI application architecture
-* Docker containerization
-* Frontend/backend integration
-* Environment and secret management
-* Automated document processing
+## 🔍 Engineering Design Decisions
 
----
+### RAG instead of fine-tuning
+RAG retrieves relevant information from an external knowledge base before generation, so changing documents does not require retraining the language model.
+
+### Local embeddings
+A local Sentence Transformers model avoids a separate embedding API and demonstrates the embedding pipeline directly.
+
+### FAISS
+FAISS provides a lightweight local vector index suitable for this application.
+
+### FastAPI + Streamlit
+FastAPI separates the AI pipeline from the interface, while Streamlit provides a lightweight Python-based UI.
+
+### Docker
+Docker packages application dependencies into reproducible containers and simplifies local deployment.
+
+## 📈 Current Scope
+
+The current implementation focuses on **PDF question answering with FAISS retrieval, Groq generation, and page-level source citations**.
 
 ## 🔮 Future Improvements
 
-* Support for DOCX and TXT documents
-* Conversation memory
-* Multi-document collections
-* Metadata filtering
-* Improved retrieval strategies
-* Reranking retrieved documents
-* Authentication and user management
-* Cloud deployment
-* CI/CD pipeline
-* Evaluation metrics for RAG quality
-
----
+- Multi-document management
+- Document deletion and re-indexing
+- Metadata filtering
+- Hybrid keyword + vector retrieval
+- Retrieval reranking
+- Conversation memory
+- RAG evaluation datasets and metrics
+- Authentication and user management
+- Persistent managed vector storage
+- Rate limiting and observability
+- CI/CD automation
 
 ## 👨‍💻 Author
 
-**Ashish Kadlag**
+**Ashish Kadlag**  
+Data Science & AI Engineering
 
-Data Science / AI Engineering Enthusiast
+- GitHub: https://github.com/ashishkadlag6-stack
+- LinkedIn: https://www.linkedin.com/in/ashish-kadlag-5bba382b5/
 
-GitHub:
-https://github.com/ashishkadlag6-stack
+## ⭐ Project Objective
 
-LinkedIn:
-https://www.linkedin.com/in/ashish-kadlag-5bba382b5/
+Build and demonstrate an end-to-end AI application connecting:
 
----
+**document processing → embeddings → vector retrieval → LLM generation → REST API → web UI → containerized deployment**
 
-## ⭐ Project Goal
-
-The goal of this project is to demonstrate how modern AI applications can combine **LLMs, RAG, vector search, APIs, data processing, and containerization** into a practical end-to-end system.
-
+This project is intended as a practical portfolio project for **AI Engineering, Generative AI, and applied Machine Learning roles**.
