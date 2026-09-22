@@ -1,28 +1,35 @@
 """
 document_processor.py
 ----------------------
-Handles the "data processing" part of the pipeline:
+Handles the data processing part of the pipeline:
 - Loads a PDF file
 - Extracts raw text
-- Splits it into overlapping chunks (better for retrieval accuracy)
+- Splits it into overlapping chunks
+- Preserves source file and page number metadata
 """
+
+import os
 
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
-def load_and_split_pdf(file_path: str, chunk_size: int = 1000, chunk_overlap: int = 150):
+def load_and_split_pdf(
+    file_path: str,
+    chunk_size: int = 1000,
+    chunk_overlap: int = 150,
+):
     """
     Loads a PDF and splits it into text chunks ready for embedding.
 
-    Args:
-        file_path: path to the PDF file on disk
-        chunk_size: max characters per chunk
-        chunk_overlap: overlap between chunks (helps preserve context across splits)
+    Each chunk keeps:
+    - source_file
+    - page_number
 
-    Returns:
-        List of LangChain Document objects (each with .page_content and .metadata)
+    Page numbers are converted from zero-based PDF metadata
+    to human-readable one-based page numbers.
     """
+
     loader = PyPDFLoader(file_path)
     raw_documents = loader.load()
 
@@ -34,9 +41,20 @@ def load_and_split_pdf(file_path: str, chunk_size: int = 1000, chunk_overlap: in
 
     chunks = splitter.split_documents(raw_documents)
 
-    # Tag each chunk with its source file name, useful for citing answers later
-    for chunk in chunks:
-        chunk.metadata["source_file"] = file_path.split("/")[-1]
+    source_file = os.path.basename(file_path)
 
-    print(f"[document_processor] Loaded '{file_path}' -> {len(chunks)} chunks")
+    for chunk in chunks:
+        chunk.metadata["source_file"] = source_file
+
+        # PyPDFLoader uses zero-based page numbers.
+        page = chunk.metadata.get("page")
+
+        if page is not None:
+            chunk.metadata["page_number"] = int(page) + 1
+
+    print(
+        f"[document_processor] Loaded '{file_path}' -> "
+        f"{len(chunks)} chunks"
+    )
+
     return chunks

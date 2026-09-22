@@ -9,6 +9,7 @@ Core RAG logic:
 """
 
 import os
+
 from dotenv import load_dotenv
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -138,12 +139,22 @@ def answer_question(question: str, top_k: int = 3):
         {"query": question}
     )
 
-    sources = list(
-        {
-            doc.metadata.get("source_file", "unknown")
-            for doc in result["source_documents"]
-        }
-    )
+    # Build unique source citations with page numbers.
+    sources = []
+    seen_sources = set()
+
+    for doc in result["source_documents"]:
+        source_file = doc.metadata.get("source_file", "unknown")
+        page_number = doc.metadata.get("page_number")
+
+        if page_number is not None:
+            source = f"{source_file} — Page {page_number}"
+        else:
+            source = source_file
+
+        if source not in seen_sources:
+            seen_sources.add(source)
+            sources.append(source)
 
     return {
         "answer": result["result"],
