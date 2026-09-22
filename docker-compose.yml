@@ -1,0 +1,35 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      DOCUMENTS_FOLDER: /app/documents
+      VECTORSTORE_FOLDER: /app/vectorstore
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./documents:/app/documents
+      - ./vectorstore:/app/vectorstore
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      API_BASE_URL: http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "8501:8501"

@@ -1,0 +1,15 @@
+.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.git/
+.gitignore
+vectorstore/*
+!vectorstore/.gitkeep
+documents/*.pdf
+!documents/.gitkeep
+frontend/.venv/
+frontend/__pycache__/
+*.log
+.DS_Store

@@ -1,0 +1,10 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+vectorstore/*
+!vectorstore/.gitkeep
+documents/*.pdf
+!documents/.gitkeep
+.agents/
